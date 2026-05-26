@@ -43,7 +43,11 @@ export default function ContactSection() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/contact', {
+      const response = await fetch(
+        __DEV__
+          ? 'http://localhost:5000/api/contact'
+          : 'https://arun-portfolio-backend.onrender.com/api/contact',
+        {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
