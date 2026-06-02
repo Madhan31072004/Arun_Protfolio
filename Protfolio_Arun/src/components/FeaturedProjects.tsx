@@ -6,13 +6,13 @@ import ScrollReveal from './ui/ScrollReveal';
 
 const PROJECTS = [
   {
-    id: 1, name: 'Luxury Bedroom Suite', location: 'Chennai, India', style: 'Modern Luxury',
+    id: 1, name: 'Luxury Bedroom Suite', location: 'Hyderabad, India', style: 'Modern Luxury',
     area: '3,200 sq.ft', year: '2024',
     image: require('../../assets/BEDROOM 1.jpeg'),
     description: 'A sophisticated bedroom featuring warm neutrals, custom millwork, and curated lighting design.',
   },
   {
-    id: 2, name: 'Grand Living Space', location: 'Bangalore, India', style: 'Contemporary Minimal',
+    id: 2, name: 'Grand Living Space', location: 'Hyderabad, India', style: 'Contemporary Minimal',
     area: '4,500 sq.ft', year: '2024',
     image: require('../../assets/LIVING AREA 1.jpeg'),
     description: 'An expansive living area with elegant furnishings, natural stone finishes, and seamless flow.',
@@ -24,14 +24,14 @@ const PROJECTS = [
     description: 'A bold kitchen combining sleek cabinetry, brass accents, and rich material textures.',
   },
   {
-    id: 4, name: 'Sacred Pooja Room', location: 'Chennai, India', style: 'Traditional Luxury',
+    id: 4, name: 'Sacred Pooja Room', location: 'Hyderabad, India', style: 'Traditional Luxury',
     area: '400 sq.ft', year: '2024',
     image: require('../../assets/pojja.jpg.jpeg'),
     description: 'A serene pooja space balancing tradition with modern design, biophilic elements, and warm lighting.',
   },
   {
-    id: 5, name: 'Entertainment Zone', location: 'Delhi, India', style: 'Modern Entertainment',
-    area: '2,100 sq.ft', year: '2024',
+    id: 5, name: 'Entertainment Zone', location: 'Hyderabad, India', style: 'Modern Entertainment',
+    area: '2,100 sq.ft', year: '2026',
     image: require('../../assets/TV 1.jpeg'),
     description: 'An opulent TV unit setup with premium finishes, ambient lighting, and luxury seating.',
   },
