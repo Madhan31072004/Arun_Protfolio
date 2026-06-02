@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform, useWindowDimensions, Linking, Image } from 'react-native';
 import { Asset } from 'expo-asset';
+import { useLightbox } from './ui/LightboxContext';
 import theme from '../theme';
 import SectionTitle from './ui/SectionTitle';
 import ScrollReveal from './ui/ScrollReveal';
@@ -264,6 +265,7 @@ function handleDownloadPDF() {
 
 export default function ResumeSection() {
   const { width } = useWindowDimensions();
+  const { openLightbox } = useLightbox();
   const isMobile = width < 600;
   const isTablet = width >= 600 && width < 1024;
   const isDesktop = width >= 1024;
@@ -307,7 +309,13 @@ export default function ResumeSection() {
             <ScrollReveal animation="slideInLeft">
               <GlassCard intensity="strong" glow style={[s.card, isMobile && s.cardMobile]}>
                 <View style={s.profileHeader}>
-                  <Image source={require('../../assets/Arun_Profile.jpeg')} style={s.profileAvatarImage} />
+                  <Pressable onPress={() => openLightbox([{ id: 'profile', src: require('../../assets/Arun_Profile.jpeg'), title: PROFILE.name, subtitle: 'Interior Designer' }])}
+                    style={Platform.OS === 'web' ? { cursor: 'pointer', transition: 'transform 0.3s ease' } as any : {}}
+                    onHoverIn={(e: any) => e.target.style.transform = 'scale(1.05)'}
+                    onHoverOut={(e: any) => e.target.style.transform = 'scale(1)'}
+                  >
+                    <Image source={require('../../assets/Arun_Profile.jpeg')} style={s.profileAvatarImage} />
+                  </Pressable>
                   <View style={{ flex: 1 }}>
                     <Text style={[s.profileName, isMobile && { fontSize: 20 }]}>{PROFILE.name}</Text>
                     <Text style={s.profileTitle}>{PROFILE.title}</Text>

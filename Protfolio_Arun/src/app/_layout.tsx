@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { LightboxProvider } from '../components/ui/LightboxContext';
 import '../global.css';
 
 export default function RootLayout() {
@@ -53,7 +54,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <>
+    <LightboxProvider>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
@@ -70,6 +71,6 @@ export default function RootLayout() {
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
         } as any} />
       )}
-    </>
+    </LightboxProvider>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet, Platform, useWindowDimensions, Image, ScrollView } from 'react-native';
+import { useLightbox } from './ui/LightboxContext';
 import theme from '../theme';
 import SectionTitle from './ui/SectionTitle';
 import ScrollReveal from './ui/ScrollReveal';
@@ -108,8 +109,9 @@ export default function GallerySection() {
   const { width } = useWindowDimensions();
   const [filter, setFilter] = useState('All');
   const [hovered, setHovered] = useState<number | null>(null);
-  const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
   const [showAll, setShowAll] = useState(false);
+  
+  const { openLightbox } = useLightbox();
 
   // ─── Responsive breakpoints ───
   const isMobile = width < 600;
@@ -128,12 +130,14 @@ export default function GallerySection() {
     return cat === 'All' ? ALL_IMAGES.length : ALL_IMAGES.filter(i => i.cat === cat).length;
   }, []);
 
-  const openLightbox = (item: GalleryItem) => setLightbox(item);
-  const closeLightbox = () => setLightbox(null);
-  const navigateLightbox = (dir: number) => {
-    if (!lightbox) return;
-    const idx = filtered.findIndex(i => i.id === lightbox.id);
-    setLightbox(filtered[(idx + dir + filtered.length) % filtered.length]);
+  const handleOpenLightbox = (item: GalleryItem) => {
+    const lightboxImages = filtered.map(img => ({
+      id: img.id,
+      src: img.src,
+      title: img.cat
+    }));
+    const index = filtered.findIndex(img => img.id === item.id);
+    openLightbox(lightboxImages, index >= 0 ? index : 0);
   };
 
   // ─── Responsive item width ───
@@ -197,7 +201,7 @@ export default function GallerySection() {
               <ScrollReveal key={img.id} delay={Math.min(i * 0.04, 0.5)} animation="scaleIn"
                 style={{ width: w }}>
                 <Pressable
-                  onPress={() => openLightbox(img)}
+                  onPress={() => handleOpenLightbox(img)}
                   onHoverIn={() => setHovered(img.id)}
                   onHoverOut={() => setHovered(null)}
                   style={[s.gridItem, { height: heroH },
@@ -249,49 +253,6 @@ export default function GallerySection() {
           </ScrollReveal>
         )}
       </View>
-
-      {/* ─── Lightbox ─── */}
-      {lightbox && Platform.OS === 'web' && (
-        <Pressable style={s.lbBackdrop} onPress={closeLightbox}>
-          <Pressable style={[s.lbClose, isMobile && { top: 12, right: 12, width: 36, height: 36 }]} onPress={closeLightbox}>
-            <Text style={s.lbCloseText}>✕</Text>
-          </Pressable>
-
-          {!isMobile && (
-            <Pressable style={[s.lbNav, { left: isMobile ? 8 : 24 }]} onPress={(e) => { e.stopPropagation(); navigateLightbox(-1); }}>
-              <Text style={s.lbNavText}>‹</Text>
-            </Pressable>
-          )}
-
-          <Pressable style={[s.lbContent, isMobile && s.lbContentMobile]} onPress={(e) => e.stopPropagation()}>
-            <Image source={lightbox.src}
-              style={[s.lbImage, isMobile ? { width: width - 32, height: (width - 32) * 0.65 } : {}]}
-              resizeMode="contain" />
-            <View style={[s.lbInfo, isMobile && { paddingHorizontal: 0 }]}>
-              <Text style={[s.lbCat, isMobile && { fontSize: 13 }]}>{CAT_ICONS[lightbox.cat]} {lightbox.cat}</Text>
-              <Text style={s.lbCounter}>{filtered.findIndex(i => i.id === lightbox.id) + 1} / {filtered.length}</Text>
-            </View>
-          </Pressable>
-
-          {!isMobile && (
-            <Pressable style={[s.lbNav, { right: isMobile ? 8 : 24 }]} onPress={(e) => { e.stopPropagation(); navigateLightbox(1); }}>
-              <Text style={s.lbNavText}>›</Text>
-            </Pressable>
-          )}
-
-          {/* Mobile swipe hint */}
-          {isMobile && (
-            <View style={s.lbMobileNav}>
-              <Pressable style={s.lbMobileBtn} onPress={(e) => { e.stopPropagation(); navigateLightbox(-1); }}>
-                <Text style={s.lbNavText}>‹ Prev</Text>
-              </Pressable>
-              <Pressable style={s.lbMobileBtn} onPress={(e) => { e.stopPropagation(); navigateLightbox(1); }}>
-                <Text style={s.lbNavText}>Next ›</Text>
-              </Pressable>
-            </View>
-          )}
-        </Pressable>
-      )}
     </View>
   );
 }
@@ -377,40 +338,4 @@ const s = StyleSheet.create({
   showMoreBtnMobile: { marginTop: 32, paddingHorizontal: 24, paddingVertical: 12 },
   showMoreBtnHover: { backgroundColor: theme.colors.primary },
   showMoreText: { fontSize: 14, fontFamily: theme.fonts.body, color: theme.colors.primary, fontWeight: '600', letterSpacing: 1 },
-
-  // ─── Lightbox ───
-  lbBackdrop: {
-    position: 'fixed' as any, top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.94)', zIndex: 9998,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  lbClose: {
-    position: 'absolute', top: 24, right: 32, zIndex: 10,
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center',
-  },
-  lbCloseText: { fontSize: 20, color: theme.colors.white, fontWeight: '300' },
-  lbContent: { maxWidth: '80%' as any, maxHeight: '85%' as any, alignItems: 'center' },
-  lbContentMobile: { maxWidth: '95%' as any, maxHeight: '70%' as any },
-  lbImage: { width: 900, height: 600, maxWidth: '100%' as any, borderRadius: theme.borderRadius.lg },
-  lbInfo: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    width: '100%', marginTop: 16, paddingHorizontal: 8,
-  },
-  lbCat: { fontSize: 15, fontFamily: theme.fonts.body, color: theme.colors.primary, fontWeight: '600', letterSpacing: 1 },
-  lbCounter: { fontSize: 13, fontFamily: theme.fonts.body, color: theme.colors.textSecondary },
-  lbNav: {
-    position: 'absolute', width: 50, height: 50, borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.08)', justifyContent: 'center',
-    alignItems: 'center', zIndex: 10,
-  },
-  lbNavText: { fontSize: 22, color: theme.colors.white, fontWeight: '300' },
-  lbMobileNav: {
-    position: 'absolute', bottom: 40, flexDirection: 'row', gap: 24,
-    alignSelf: 'center',
-  },
-  lbMobileBtn: {
-    paddingHorizontal: 24, paddingVertical: 12, borderRadius: theme.borderRadius.full,
-    backgroundColor: 'rgba(255,255,255,0.1)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
-  },
 });
