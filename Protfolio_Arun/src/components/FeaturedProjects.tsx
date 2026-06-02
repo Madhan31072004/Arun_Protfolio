@@ -45,6 +45,7 @@ export default function FeaturedProjects() {
   const isDesktop = width >= 900;
   const [activeFilter, setActiveFilter] = useState('All');
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [lightbox, setLightbox] = useState<typeof PROJECTS[0] | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   return (
@@ -88,6 +89,7 @@ export default function FeaturedProjects() {
         {PROJECTS.map((project, index) => (
           <ScrollReveal key={project.id} delay={index * 0.15} animation="scaleIn">
             <Pressable
+              onPress={() => setLightbox(project)}
               onHoverIn={() => setHoveredId(project.id)}
               onHoverOut={() => setHoveredId(null)}
               style={[
@@ -158,6 +160,24 @@ export default function FeaturedProjects() {
         </Text>
         <View style={styles.scrollHintLine} />
       </View>
+
+      {/* Lightbox */}
+      {lightbox && Platform.OS === 'web' && (
+        <Pressable style={styles.lbBackdrop} onPress={() => setLightbox(null)}>
+          <Pressable style={[styles.lbClose, isMobile && { top: 12, right: 12, width: 36, height: 36 }]} onPress={() => setLightbox(null)}>
+            <Text style={styles.lbCloseText}>✕</Text>
+          </Pressable>
+          <Pressable style={[styles.lbContent, isMobile && styles.lbContentMobile]} onPress={(e) => e.stopPropagation()}>
+            <Image source={lightbox.image}
+              style={[styles.lbImage, isMobile ? { width: width - 32, height: (width - 32) * 0.65 } : {}]}
+              resizeMode="contain" />
+            <View style={[styles.lbInfo, isMobile && { paddingHorizontal: 0 }]}>
+              <Text style={[styles.lbCat, isMobile && { fontSize: 13 }]}>{lightbox.name}</Text>
+              <Text style={styles.lbCounter}>📍 {lightbox.location}</Text>
+            </View>
+          </Pressable>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -323,4 +343,26 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     letterSpacing: 3,
   },
+  
+  // Lightbox
+  lbBackdrop: {
+    position: 'fixed' as any, top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.94)', zIndex: 9998,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  lbClose: {
+    position: 'absolute', top: 24, right: 32, zIndex: 10,
+    width: 44, height: 44, borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center',
+  },
+  lbCloseText: { fontSize: 20, color: theme.colors.white, fontWeight: '300' },
+  lbContent: { maxWidth: '80%' as any, maxHeight: '85%' as any, alignItems: 'center' },
+  lbContentMobile: { maxWidth: '95%' as any, maxHeight: '70%' as any },
+  lbImage: { width: 900, height: 600, maxWidth: '100%' as any, borderRadius: theme.borderRadius.lg },
+  lbInfo: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    width: '100%', marginTop: 16, paddingHorizontal: 8,
+  },
+  lbCat: { fontSize: 15, fontFamily: theme.fonts.body, color: theme.colors.primary, fontWeight: '600', letterSpacing: 1 },
+  lbCounter: { fontSize: 13, fontFamily: theme.fonts.body, color: theme.colors.textSecondary },
 });
