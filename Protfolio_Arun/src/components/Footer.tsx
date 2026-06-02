@@ -13,6 +13,7 @@ const FOOTER_LINKS = [
   { label: 'About', id: 'about' },
   { label: 'Projects', id: 'projects' },
   { label: 'Process', id: 'process' },
+  { label: 'Resume', id: 'resume' },
   { label: 'Contact', id: 'contact' },
 ];
 

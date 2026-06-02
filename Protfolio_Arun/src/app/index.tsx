@@ -9,6 +9,7 @@ import GallerySection from '../components/GallerySection';
 import DesignProcess from '../components/DesignProcess';
 import PhilosophySection from '../components/PhilosophySection';
 import SkillsetSection from '../components/SkillsetSection';
+import ResumeSection from '../components/ResumeSection';
 import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 import FloatingSocials from '../components/ui/FloatingSocials';
@@ -48,7 +49,10 @@ export default function PortfolioHome() {
         {/* 7. Skillset */}
         <SkillsetSection />
 
-        {/* 8. Contact */}
+        {/* 8. Resume */}
+        <ResumeSection />
+
+        {/* 9. Contact */}
         <ContactSection />
 
         {/* Footer */}

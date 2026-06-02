@@ -135,7 +135,7 @@ export default function SkillsetSection() {
         <ScrollReveal delay={0.5} style={styles.extraTools}>
           <Text style={styles.extraLabel}>Also proficient in</Text>
           <View style={styles.extraRow}>
-            {['Photoshop', 'Lumion', 'Blender', '3ds Max', 'Revit', 'Pinterest'].map((tool) => (
+            {['Photoshop', 'Lumion', 'Blender', 'Revit', 'Pinterest'].map((tool) => (
               <View key={tool} style={[styles.extraPill, Platform.OS === 'web' ? {
                 transition: 'all 0.3s ease',
               } as any : {}]}>

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const lineItemSchema = new mongoose.Schema({
   slNo: { type: Number },
   description: { type: String, required: true },
+  finish: { type: String, default: '' },
   materialId: { type: mongoose.Schema.Types.ObjectId, ref: 'Material' },
   specification: { type: String, default: '' },
   unit: { type: String, default: 'sq.ft' },
@@ -61,34 +62,47 @@ quotationSchema.index({ userId: 1, clientId: 1 });
 
 // Auto-calculate totals before save
 quotationSchema.pre('save', function (next) {
-  // Calculate area subtotals
-  this.areas.forEach((area) => {
-    area.items.forEach((item, idx) => {
-      item.slNo = idx + 1;
-      item.amount = (item.quantity || 0) * (item.unitPrice || 0);
+  try {
+    // Calculate area subtotals
+    this.areas.forEach((area) => {
+      area.items.forEach((item, idx) => {
+        item.slNo = idx + 1;
+        const h = item.height || 0;
+        const w = item.width || 0;
+        const dimensionArea = (h > 0 && w > 0) ? (h * w) : 1;
+        item.amount = dimensionArea * (item.quantity || 0) * (item.unitPrice || 0);
+      });
+      area.subtotal = area.items.reduce((sum, item) => sum + (item.amount || 0), 0);
     });
-    area.subtotal = area.items.reduce((sum, item) => sum + (item.amount || 0), 0);
-  });
 
-  // Calculate quotation totals
-  this.subtotal = this.areas.reduce((sum, area) => sum + (area.subtotal || 0), 0);
+    // Calculate quotation totals
+    this.subtotal = this.areas.reduce((sum, area) => sum + (area.subtotal || 0), 0);
 
-  // Discount
-  if (this.discountType === 'percentage') {
-    this.discountAmount = (this.subtotal * (this.discountValue || 0)) / 100;
-  } else {
-    this.discountAmount = this.discountValue || 0;
+    // Discount
+    if (this.discountType === 'percentage') {
+      this.discountAmount = (this.subtotal * (this.discountValue || 0)) / 100;
+    } else {
+      this.discountAmount = this.discountValue || 0;
+    }
+
+    const afterDiscount = this.subtotal - this.discountAmount;
+
+    // Tax
+    this.taxAmount = (afterDiscount * (this.taxPercentage || 0)) / 100;
+
+    // Grand total
+    this.grandTotal = afterDiscount + this.taxAmount;
+
+    if (typeof next === 'function') {
+      next();
+    }
+  } catch (err) {
+    if (typeof next === 'function') {
+      next(err);
+    } else {
+      throw err;
+    }
   }
-
-  const afterDiscount = this.subtotal - this.discountAmount;
-
-  // Tax
-  this.taxAmount = (afterDiscount * (this.taxPercentage || 0)) / 100;
-
-  // Grand total
-  this.grandTotal = afterDiscount + this.taxAmount;
-
-  next();
 });
 
 module.exports = mongoose.model('Quotation', quotationSchema);

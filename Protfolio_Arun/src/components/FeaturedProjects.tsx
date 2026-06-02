@@ -1,39 +1,39 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Platform, useWindowDimensions, ScrollView } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform, useWindowDimensions, ScrollView, Image } from 'react-native';
 import theme from '../theme';
 import SectionTitle from './ui/SectionTitle';
 import ScrollReveal from './ui/ScrollReveal';
 
 const PROJECTS = [
   {
-    id: 1, name: 'The Ivory Residence', location: 'Mumbai, India', style: 'Modern Luxury',
+    id: 1, name: 'Luxury Bedroom Suite', location: 'Chennai, India', style: 'Modern Luxury',
     area: '3,200 sq.ft', year: '2024',
-    image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&q=80',
-    description: 'A sophisticated urban apartment featuring warm neutrals, custom millwork, and curated art pieces.',
+    image: require('../../assets/BEDROOM 1.jpeg'),
+    description: 'A sophisticated bedroom featuring warm neutrals, custom millwork, and curated lighting design.',
   },
   {
-    id: 2, name: 'Walnut Grove Villa', location: 'Bangalore, India', style: 'Contemporary Minimal',
+    id: 2, name: 'Grand Living Space', location: 'Bangalore, India', style: 'Contemporary Minimal',
     area: '4,500 sq.ft', year: '2024',
-    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
-    description: 'An expansive villa with floor-to-ceiling windows, natural stone finishes, and seamless indoor-outdoor flow.',
+    image: require('../../assets/LIVING AREA 1.jpeg'),
+    description: 'An expansive living area with elegant furnishings, natural stone finishes, and seamless flow.',
   },
   {
-    id: 3, name: 'The Golden Loft', location: 'Hyderabad, India', style: 'Industrial Chic',
+    id: 3, name: 'Designer Kitchen', location: 'Hyderabad, India', style: 'Premium Modular',
     area: '2,800 sq.ft', year: '2023',
-    image: 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&q=80',
-    description: 'A bold penthouse combining exposed concrete, brass accents, and rich leather textures.',
+    image: require('../../assets/KITCHEN.jpeg'),
+    description: 'A bold kitchen combining sleek cabinetry, brass accents, and rich material textures.',
   },
   {
-    id: 4, name: 'Serene Office Hub', location: 'Chennai, India', style: 'Corporate Modern',
-    area: '6,000 sq.ft', year: '2023',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80',
-    description: 'A productive workspace balancing openness with private pods, biophilic elements, and smart lighting.',
+    id: 4, name: 'Sacred Pooja Room', location: 'Chennai, India', style: 'Traditional Luxury',
+    area: '400 sq.ft', year: '2024',
+    image: require('../../assets/pojja.jpg.jpeg'),
+    description: 'A serene pooja space balancing tradition with modern design, biophilic elements, and warm lighting.',
   },
   {
-    id: 5, name: 'Velvet Dreams Suite', location: 'Delhi, India', style: 'Luxury Classic',
+    id: 5, name: 'Entertainment Zone', location: 'Delhi, India', style: 'Modern Entertainment',
     area: '2,100 sq.ft', year: '2024',
-    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80',
-    description: 'An opulent master suite with velvet upholstery, marble accents, and a walk-in dressing room.',
+    image: require('../../assets/TV 1.jpeg'),
+    description: 'An opulent TV unit setup with premium finishes, ambient lighting, and luxury seating.',
   },
 ];
 
@@ -41,18 +41,19 @@ const FILTERS = ['All', 'Residential', 'Commercial'];
 
 export default function FeaturedProjects() {
   const { width } = useWindowDimensions();
+  const isMobile = width < 600;
   const isDesktop = width >= 900;
   const [activeFilter, setActiveFilter] = useState('All');
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   return (
-    <View style={styles.container} nativeID="projects">
-      <View style={styles.header}>
+    <View style={[styles.container, isMobile && styles.containerMobile]} nativeID="projects">
+      <View style={[styles.header, isMobile && { paddingHorizontal: 12 }]}>
         <SectionTitle
           label="PORTFOLIO"
-          title="Featured Projects"
-          subtitle="Each project is crafted as a unique story of luxury, comfort, and timeless design."
+          title={isMobile ? 'Projects' : 'Featured Projects'}
+          subtitle={isMobile ? 'Luxury, comfort, and timeless design.' : 'Each project is crafted as a unique story of luxury, comfort, and timeless design.'}
         />
 
         {/* Filter pills */}
@@ -80,8 +81,8 @@ export default function FeaturedProjects() {
         ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        snapToInterval={isDesktop ? 420 : 320}
+        contentContainerStyle={[styles.scrollContent, isMobile && { paddingHorizontal: 12, gap: 14 }]}
+        snapToInterval={isDesktop ? 420 : isMobile ? 260 : 320}
         decelerationRate="fast"
       >
         {PROJECTS.map((project, index) => (
@@ -91,7 +92,7 @@ export default function FeaturedProjects() {
               onHoverOut={() => setHoveredId(null)}
               style={[
                 styles.card,
-                isDesktop ? styles.cardDesktop : styles.cardMobile,
+                isDesktop ? styles.cardDesktop : isMobile ? styles.cardPhone : styles.cardMobile,
                 Platform.OS === 'web' ? {
                   transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer',
@@ -103,13 +104,10 @@ export default function FeaturedProjects() {
               ]}
             >
               {/* Project Image */}
-              <View style={[styles.cardImage, Platform.OS === 'web' ? {
-                backgroundImage: `url(${project.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+              <Image source={project.image} style={[styles.cardImage, Platform.OS === 'web' ? {
                 transition: 'transform 0.6s ease',
                 ...(hoveredId === project.id ? { transform: 'scale(1.05)' } : {}),
-              } as any : {}]} />
+              } as any : {}]} resizeMode="cover" />
 
               {/* Overlay */}
               <View style={[
@@ -125,8 +123,8 @@ export default function FeaturedProjects() {
                 </View>
 
                 <View style={styles.cardBottom}>
-                  <Text style={styles.cardName}>{project.name}</Text>
-                  <Text style={styles.cardLocation}>📍 {project.location}</Text>
+                  <Text style={[styles.cardName, isMobile && { fontSize: 18, marginBottom: 4 }]}>{project.name}</Text>
+                  <Text style={[styles.cardLocation, isMobile && { fontSize: 11 }]}>📍 {project.location}</Text>
                   {hoveredId === project.id && (
                     <View style={Platform.OS === 'web' ? { animation: 'fadeUp 0.4s ease forwards' } as any : {}}>
                       <Text style={styles.cardDesc}>{project.description}</Text>
@@ -153,9 +151,11 @@ export default function FeaturedProjects() {
       </ScrollView>
 
       {/* Scroll hint */}
-      <View style={styles.scrollHint}>
+      <View style={[styles.scrollHint, isMobile && { marginTop: 20 }]}>
         <View style={styles.scrollHintLine} />
-        <Text style={styles.scrollHintText}>DRAG TO EXPLORE</Text>
+        <Text style={[styles.scrollHintText, isMobile && { fontSize: 9, letterSpacing: 2 }]}>
+          {isMobile ? 'SWIPE →' : 'DRAG TO EXPLORE'}
+        </Text>
         <View style={styles.scrollHintLine} />
       </View>
     </View>
@@ -166,6 +166,9 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.surface,
     paddingVertical: theme.spacing.section,
+  },
+  containerMobile: {
+    paddingVertical: 60,
   },
   header: {
     paddingHorizontal: 24,
@@ -214,9 +217,12 @@ const styles = StyleSheet.create({
   },
   cardDesktop: { width: 400, height: 520 },
   cardMobile: { width: 300, height: 440 },
+  cardPhone: { width: 240, height: 360 },
   cardImage: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
+    width: '100%',
+    height: '100%',
     backgroundColor: theme.colors.surface,
   },
   cardOverlay: {

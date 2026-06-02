@@ -1,11 +1,48 @@
 const Quotation = require('../models/Quotation');
+const CompanyProfile = require('../models/CompanyProfile');
 
-// Generate unique quotation number
+// Generate unique quotation number starting from 1 (001)
 const generateQuotationNumber = async (userId) => {
   const year = new Date().getFullYear();
-  const count = await Quotation.countDocuments({ userId });
-  const num = String(count + 1).padStart(3, '0');
-  return `AQ-${year}-${num}`;
+
+  let prefix = 'AQ';
+  try {
+    const profile = await CompanyProfile.findOne({ userId });
+    if (profile && profile.quotationPrefix) {
+      prefix = profile.quotationPrefix;
+    }
+  } catch (error) {
+    console.error('Error fetching company profile for prefix:', error);
+  }
+
+  let nextNum = 1;
+  try {
+    // Find the latest quotation with the current prefix and year
+    const latestQuotation = await Quotation.findOne({
+      userId,
+      quotationNumber: new RegExp(`^${prefix}-${year}-`)
+    }).sort({ quotationNumber: -1 });
+
+    if (latestQuotation && latestQuotation.quotationNumber) {
+      const parts = latestQuotation.quotationNumber.split('-');
+      const lastPart = parts[parts.length - 1];
+      const numericVal = parseInt(lastPart, 10);
+      if (!isNaN(numericVal)) {
+        nextNum = numericVal + 1;
+      }
+    } else {
+      // If no quotation matches prefix, fall back to count + 1
+      const count = await Quotation.countDocuments({ userId });
+      nextNum = count + 1;
+    }
+  } catch (error) {
+    console.error('Error calculating next quotation number:', error);
+    const count = await Quotation.countDocuments({ userId });
+    nextNum = count + 1;
+  }
+
+  const num = String(nextNum).padStart(3, '0');
+  return `${prefix}-${year}-${num}`;
 };
 
 // @route   GET /api/quotations
@@ -28,6 +65,7 @@ exports.getQuotations = async (req, res) => {
 exports.createQuotation = async (req, res) => {
   try {
     const quotationNumber = await generateQuotationNumber(req.user._id);
+    console.log('Backend generating quotation number:', quotationNumber);
     const quotation = await Quotation.create({
       ...req.body,
       userId: req.user._id,
@@ -35,6 +73,7 @@ exports.createQuotation = async (req, res) => {
     });
     res.status(201).json(quotation);
   } catch (error) {
+    console.error('BACKEND CREATE QUOTATION ERROR:', error);
     res.status(500).json({ message: error.message });
   }
 };

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Platform, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Platform, useWindowDimensions, Image } from 'react-native';
 import theme from '../theme';
+
+const heroImage = require('../../assets/LIVING AREA 3.jpeg');
 
 const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   id: i,
@@ -37,12 +39,9 @@ export default function HeroSection() {
     <View ref={heroRef} style={styles.container} nativeID="hero">
       {/* Background with Ken Burns effect */}
       <View style={styles.bgContainer}>
-        <View style={[styles.bgImage, Platform.OS === 'web' ? {
-          backgroundImage: 'url(https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+        <Image source={heroImage} style={[styles.bgImage, Platform.OS === 'web' ? {
           animation: 'kenBurns 25s ease-in-out infinite alternate',
-        } as any : {}]} />
+        } as any : {}]} resizeMode="cover" />
         <View style={styles.overlay} />
         <View style={styles.overlayGradient} />
       </View>
@@ -161,6 +160,8 @@ const styles = StyleSheet.create({
   bgImage: {
     position: 'absolute',
     top: -20, left: -20, right: -20, bottom: -20,
+    width: '110%',
+    height: '110%',
   },
   overlay: {
     position: 'absolute',
