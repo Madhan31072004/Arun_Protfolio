@@ -5,7 +5,7 @@ import SectionTitle from './ui/SectionTitle';
 import ScrollReveal from './ui/ScrollReveal';
 
 const STEPS = [
-  { num: '01', title: 'Consultation', desc: 'Understanding your vision, lifestyle, and requirements through in-depth discussion.', icon: '💬' },
+  // { num: '01', title: 'Consultation', desc: 'Understanding your vision, lifestyle, and requirements through in-depth discussion.', icon: '💬' },
   { num: '02', title: 'Concept Design', desc: 'Creating mood boards, style direction, and initial design concepts for approval.', icon: '🎨' },
   { num: '03', title: '3D Visualization', desc: 'Photorealistic 3D renders bringing the concept to life before execution.', icon: '🖥️' },
   { num: '04', title: 'Material Selection', desc: 'Curating the finest materials, fabrics, and finishes for your space.', icon: '🪵' },

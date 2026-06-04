@@ -85,7 +85,7 @@ export default function ContactSection() {
 
         <View style={[styles.grid, isDesktop && styles.gridDesktop]}>
           {/* Contact Form */}
-          <ScrollReveal animation="slideInLeft" style={[styles.formCol, isDesktop && { flex: 0.55 }]}>
+          {/* <ScrollReveal animation="slideInLeft" style={[styles.formCol, isDesktop && { flex: 0.55 }]}>
             <View style={styles.form}>
               {success ? (
                 <View style={styles.successContainer}>
@@ -171,7 +171,7 @@ export default function ContactSection() {
                 </View>
               )}
             </View>
-          </ScrollReveal>
+          </ScrollReveal> */}
 
           {/* Contact Info Card */}
           <ScrollReveal animation="slideInRight" delay={0.2} style={[styles.infoCol, isDesktop && { flex: 0.42 }]}>

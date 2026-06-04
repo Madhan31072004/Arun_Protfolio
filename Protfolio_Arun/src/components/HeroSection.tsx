@@ -101,12 +101,12 @@ export default function HeroSection() {
             >
               <Text style={styles.btnPrimaryText}>View Projects</Text>
             </Pressable>
-            <Pressable
+            {/* <Pressable
               onPress={() => scrollTo('contact')}
               style={({ hovered }: any) => [styles.btnSecondary, hovered && styles.btnSecondaryHover]}
             >
               <Text style={styles.btnSecondaryText}>Book Consultation</Text>
-            </Pressable>
+            </Pressable> */}
           </View>
         </View>
 

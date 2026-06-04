@@ -60,12 +60,12 @@ export default function Navigation() {
                   <Text style={styles.linkText}>{link.label}</Text>
                 </Pressable>
               ))}
-              <Pressable
+              {/* <Pressable
                 onPress={() => scrollTo('contact')}
                 style={({ hovered }: any) => [styles.cta, hovered && styles.ctaHover]}
               >
                 <Text style={styles.ctaText}>Book Consultation</Text>
-              </Pressable>
+              </Pressable> */}
             </View>
           )}
 
@@ -96,12 +96,12 @@ export default function Navigation() {
               </Text>
             </Pressable>
           ))}
-          <Pressable
+          {/* <Pressable
             onPress={() => scrollTo('contact')}
             style={styles.mobileCta}
           >
             <Text style={styles.mobileCtaText}>Book Consultation</Text>
-          </Pressable>
+          </Pressable> */}
         </View>
       )}
     </>
